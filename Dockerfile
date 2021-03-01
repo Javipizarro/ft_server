@@ -4,6 +4,7 @@ RUN	apt-get update					-y &&\
 	apt-get upgrade					-y &&\
 	apt-get install nginx			-y &&\
 	apt-get install php7.3-fpm		-y &&\
+	apt-get	install mariadb-server	-y &&\
 	apt-get install php7.3-mysql	-y
 
 #toni
@@ -16,11 +17,14 @@ RUN	apt-get update					-y &&\
 #COPY 	srcs/localhost.sql ./
 #COPY	srcs/index.html /var/www/html/
 
-#RUN	apt-get install vim -y
+RUN	apt-get install vim -y
 
 #COPY . /usr/share/nginx/html
-COPY index.html /var/www/html/
-COPY srcs/nginx-init.sh ./root/
+COPY	srcs/index.html		/var/www/html/					&&\
+		srcs/defaul			/etc/nginx/sites-available/		&&\
+		srcs/info.php		/var/www/html/
+
+#COPY srcs/nginx-init.sh ./root/
 
 EXPOSE 80
 
