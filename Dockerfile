@@ -1,42 +1,33 @@
 FROM debian:buster
 
-RUN	apt-get update					-y &&\
-	apt-get upgrade					-y &&\
-	apt-get install nginx			-y &&\
-	apt-get install php7.3-fpm		-y &&\
-	apt-get install mariadb-server	-y &&\
-	apt-get install php7.3-mysql	-y &&\
-	apt-get install curl			-y &&\
-	apt-get install unzip
+RUN		apt-get update					-y &&\
+		apt-get upgrade					-y &&\
+		apt-get install nginx			-y &&\
+		apt-get install php7.3-fpm		-y &&\
+		apt-get install mariadb-server	-y &&\
+		apt-get install php7.3-mysql	-y &&\
+		apt-get install php-mbstring	-y &&\
+		apt-get install wget			-y
+	
 
-#RUN	curl https://files.phpmyadmin.net/phpMyAdmin/5.1.0/phpMyAdmin-5.1.0-all-languages.zip \
-#	| unzip /var/www/html/ \
-#	&& mv phpMyAdmin-5.1.0-all-languages phpmyadmin 
+COPY	srcs/index.html					/var/www/html/
+COPY	srcs/info.php					/var/www/html/
+COPY	srcs/default					/etc/nginx/sites-available/default
 
-#toni
-#RUN 	apt-get update && apt-get -y install nginx php7.3-fpm php7.3-mysql mariadb-server openssl\
-#		&& rm -rf /var/lib/apt/lists/*
-#COPY 	srcs/nginx.conf /etc/nginx/sites-available/
-#COPY	srcs/wordpress  /var/www/html/wordpress
-#COPY	srcs/phpMyAdmin /var/www/html/phpMyAdmin
-#COPY 	srcs/newdb.sql ./
-#COPY 	srcs/localhost.sql ./
-#COPY	srcs/index.html /var/www/html/
 
-#RUN	apt-get install vim -y
+RUN 	wget https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-english.tar.gz	&&\
+		tar -zxf phpMyAdmin-5.0.4-english.tar.gz											&&\
+		mv phpMyAdmin-5.0.4-english var/www/html/phpmyadmin									&&\
+		rm phpMyAdmin-5.0.4-english.tar.gz													&&\
+		mkdir -m 777 var/www/html/phpmyadmin/tmp
 
-#COPY . /usr/share/nginx/html
-COPY	srcs/index.html	/var/www/html/
-COPY	srcs/info.php	/var/www/html/
-COPY	srcs/default	/etc/nginx/sites-available/default
-#COPY srcs/nginx-init.sh ./root/
+COPY	srcs/config.inc.php				/var/www/html/phpmyadmin/
+COPY	srcs/guestuser.sql				/var/www/html/phpmyadmin/tmp/
 
-EXPOSE 80
+EXPOSE	80
 
-#CMD [“nginx”,”-g”,”daemon off;”]
-#CMD [ "echo", "apt-get upgrade running" ]
-#CMD bash root/nginx-init.sh
-CMD 	service nginx start && \
-		service mysql start	&& \
-		service php7.3-fpm start && \
+CMD 	service nginx start											&&\
+		service mysql start											&&\
+		mysql -u root < /var/www/html/phpmyadmin/tmp/guestuser.sql	&&\
+		service php7.3-fpm start									&&\
 		bash
