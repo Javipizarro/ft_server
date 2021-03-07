@@ -5,4 +5,4 @@ It's a LEMP server in a Docker container with debian buster OS that runs MariaDB
 
 Username and password for phpmyadmin are 'admin' and 'admin123456' respectively.
 
-Atoindex is on by default, to toggle it use the script tai.sh with the command source. tai = Toggle AutoIndex.
+Atoindex is on by default. To toggle it, inside the container, use the script tai.sh with the command source; (tai = Toggle AutoIndex).
